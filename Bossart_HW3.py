@@ -14,11 +14,16 @@ z = np.hstack((ones, z))
 n = y.size
 beta = np.asarray([0.95913, 0]).reshape(2,1)
 
+
 def update_pi(beta):
-    return (1/(1 + np.exp(-z.dot(beta))))
+    pi = (1/(1 + np.exp(-z.dot(beta))))
+    return pi
+
+def get_b(pi):
+    return -np.log(pi)
 
 def newton_beta(beta):
-    # this if our first value for everything\
+    # this if our first value for everything
     iteration = 0
 
     W = np.zeros((n,n))
@@ -33,9 +38,24 @@ def newton_beta(beta):
         beta = beta + Hessian.dot(z.T.dot(y - pi))
         pi = update_pi(beta)
         np.fill_diagonal(W, pi*(1-pi))
-  
+    
+    b = get_b(pi)
+    return b;
+
 newton_beta(beta)
 
 # number 1b
 beta = np.asarray([0, 0]).reshape(2,1)
 newton_beta(beta)
+# TODO: make the tables look nice
+
+# number 1c - contour plot
+def loglikelihood(b0, b1):
+    return
+    
+def make_contour():
+
+    return
+
+
+make_contour()
