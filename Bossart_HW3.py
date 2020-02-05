@@ -13,6 +13,11 @@ ones = np.ones((1042, 1))
 z = np.hstack((ones, z))
 n = y.size
 beta = np.asarray([0.95913, 0]).reshape(2,1)
+abeta0s = []
+abeta1s = []
+bbeta0s = []
+bbeta1s = []
+
 
 
 def update_pi(beta):
@@ -22,7 +27,7 @@ def update_pi(beta):
 def get_b(pi):
     return -np.log(pi)
 
-def newton_beta(beta):
+def newton_beta(beta, opt):
     # this if our first value for everything
     iteration = 0
 
@@ -31,21 +36,28 @@ def newton_beta(beta):
     np.fill_diagonal(W, pi*(1-pi))
 
     for i in range(5):
-
         Hessian = inv(multi_dot((z.T, W, z)))
         print(iteration, beta, Hessian)
         iteration = iteration + 1
+        
+        if opt == 0:
+            abeta0s.append(beta[0])
+            abeta1s.append(beta[1])
+            
+        if opt == 1:
+            bbeta0s.append(beta[0])
+            bbeta1s.append(beta[1])
+            
         beta = beta + Hessian.dot(z.T.dot(y - pi))
         pi = update_pi(beta)
         np.fill_diagonal(W, pi*(1-pi))
-    
     return;
 
-newton_beta(beta)
+newton_beta(beta, 0)
 
 # number 1b
 beta = np.asarray([0, 0]).reshape(2,1)
-newton_beta(beta)
+newton_beta(beta, 1)
 # TODO: make the tables look nice
 
 # number 1c - contour plot
@@ -73,5 +85,12 @@ for i in range(B0.shape[0]):
 
 plt.figure
 plt.contourf(B0, B1, ll, 40, cmap = 'ocean')
+plt.plot(abeta0s, abeta1s, '*m-')
+plt.title('Contour plot of the log-likelihood function with inputs, B0 and B1')
+plt.xlabel('B0 values')
+plt.ylabel('B1 values')
+plt.annotate('B0_b, B1_b', (-0.2,2))
+plt.annotate('B0_a, B1_a', (1,3))
+plt.plot(bbeta0s, bbeta1s, '*r-')
 
 # we need to calculate the log likelihood function 
