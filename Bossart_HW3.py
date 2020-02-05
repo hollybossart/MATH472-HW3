@@ -39,8 +39,7 @@ def newton_beta(beta):
         pi = update_pi(beta)
         np.fill_diagonal(W, pi*(1-pi))
     
-    b = get_b(pi)
-    return b;
+    return;
 
 newton_beta(beta)
 
@@ -50,12 +49,29 @@ newton_beta(beta)
 # TODO: make the tables look nice
 
 # number 1c - contour plot
-def loglikelihood(b0, b1):
-    return
-    
-def make_contour():
-
-    return
+num_pts = 200;
+b0_vals = np.linspace(-2, 2, num_pts)
+b1_vals = np.linspace(-15, 15, num_pts)
+B0, B1 = np.meshgrid(b0_vals, b1_vals)
 
 
-make_contour()
+# we need to iterate through the mesh now and calculate the loglikehood
+
+def loglikelihood(y, z, beta0, beta1):
+    ones = np.ones((y.size, 1))
+    beta = np.array([beta0, beta1]).reshape(2,1)
+    pi = (1/(1 + np.exp(-z.dot(beta)))).reshape(y.size, 1)
+    b = -np.log(1-pi)
+    return multi_dot((y.T, z, beta)) -b.T.dot(ones)
+
+ll = np.zeros((B0.shape[0], B1.shape[0]))    
+for i in range(B0.shape[0]):
+    for j in range (B1.shape[0]):
+        b0 = B0[i,j]
+        b1 = B1[i,j]
+        ll[i,j] = loglikelihood(y,z,b0,b1)
+
+plt.figure
+plt.contourf(B0, B1, ll, 40, cmap = 'ocean')
+
+# we need to calculate the log likelihood function 
