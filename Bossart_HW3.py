@@ -222,6 +222,21 @@ def bisection(x, a, b, tol):
 
 bisection(0, -1, 1, tol)
 
+
+# fixed point iteration
+alphas = [1,.64,.25] # scaling factor 
+iterations = 0
+for alpha in alphas:
+    theta = -1 
+    while llprime(theta)>tol:
+        theta = theta + alpha*llprime(theta) 
+        k+=1    
+    print('Fixed-point estimate for alpha = %.2f is: ' %alpha,theta)
+    print('Iterations: ',iterations)
+    print('Tolerance: ', tol)
+    print()
+
+
 # number 3
 from scipy.stats import gamma
 
