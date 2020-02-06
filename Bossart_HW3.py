@@ -94,6 +94,80 @@ plt.annotate('B0_a, B1_a', (1,3))
 plt.plot(bbeta0s, bbeta1s, '*r-')
 
 # number 2
+cauchy_vals = np.asarray([1.77,-0.23,2.76,3.8,3.47,56.75,-1.34,4.24,-2.44,3.29,3.71,-2.4,4.53,-0.07,-1.05,-13.87,-2.53,-1.75,0.27,43.21])
+n = cauchy_vals.size
+
+def loglike(theta):
+    foo = -np.log([1+(cauchy_vals[i]-theta)**2 for i in range(n)]).sum(axis=0)
+    return  -n*np.log(np.pi) + foo
+
+def llprime(theta):
+    temp = []
+    #iterate through all observations
+    for i in range(n):
+        temp.append(2*(cauchy_vals[i]-theta)/((cauchy_vals[i] - theta)**2 + 1))   
+    return sum(temp)
+
+def llprime2(theta):
+    temp = []
+    for i in range(n):
+        temp.append((-2*(theta**2-2*theta*cauchy_vals[i]+cauchy_vals[i]**2-1))/((theta**2-2*theta*cauchy_vals[i]+cauchy_vals[i]**2+1)**2))
+    return sum(temp)
+
+def step(theta):
+    return llprime(theta) / llprime2(theta)
+
+def newton_method(theta, tol, max_iterations, print_option):
+    theta_vals = [theta]
+    num_iterations = 0
+    
+    while abs(llprime(theta)) > tol and num_iterations < max_iterations:
+        old_theta = theta_vals[num_iterations]
+        new_theta = old_theta + step(old_theta)
+        num_iterations += 1
+        theta_vals.append(new_theta)
+        theta = new_theta
+        
+        
+    # at this point we have broken out of the while loop    
+    if num_iterations == max_iterations:
+        print("Exceeded maximum number of iterations.")
+        return
+        
+    # this is where we hope to be if newtons went well    
+    if print_option == 1:
+        print('\n')
+        print("Starting value: " + str(theta_vals[0]))
+        sol = theta_vals[-1]
+        print("Number of iterations: " + str(num_iterations) + " \nTolerance: " + str(tol))
+        print("Final solution: " + str(sol))
+        return
+    
+    if print_option == 0:
+        return theta_vals[-1]
+
+# plotting the log likelihood function
+thetas = np.linspace(-12,12, 1000)
+plt.figure()
+plt.plot(thetas, loglike(thetas))
+
+plt.title('Graph of the log-likelihood function')
+plt.xlabel('Theta values')
+plt.ylabel('Log-likehood function')
+
+# find the MLE for theta using NR method
+starting_pts = np.asarray([-11, -1, 0, 1.5, 4, 4.7, 7, 8, 38])
+tol = 1e-6
+max_iterations = 2000
+printopt = 1
+for val in starting_pts:
+    newton_method(val, tol, max_iterations, printopt)
+
+
+
+
+
+# number 3
 from scipy.stats import gamma
 
 a = 2 #given from gamma
@@ -133,3 +207,5 @@ plt.axvline(right_intercept)
 x = np.arange(left_intercept, right_intercept, 0.01)
 plt.fill_between(x, gamma.pdf(x, a), color = 'c')
 plt.annotate('95% posterior \ndensity interval', (0.8, 0.17))
+
+
