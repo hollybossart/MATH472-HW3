@@ -165,7 +165,62 @@ for val in starting_pts:
 
 
 
+## find MLE using bisection method with new starting pts
 
+def bisection(x, a, b, tol):
+    num_iterations = 0
+    max_iterations = 100
+    a0 = a
+    b0 = b
+    
+    # creating lists for these values for graphing purposes later
+    a_list = [a]
+    b_list = [b]
+    x_list = [x]
+    
+    # check the condition holds to continue the loop
+    while ((abs(llprime(x)) > tol) and (num_iterations < max_iterations)):
+        
+        # check that condition holds for intermediate value theorem
+        if llprime(a)*llprime(b) > 0:
+            print("Bisection method fails.")
+            return
+        
+        # if this does not fail, then we can test other conditions given in book
+        if llprime(a)*llprime(x) <= 0:
+            a = a
+            b = x
+        elif llprime(a)*llprime(x) > 0:
+            a = x
+            b = b
+        else:
+            print("Something went wrong!")
+            return
+        
+        # updating new x values in new interval
+        x = (a+b)/2;
+        num_iterations+=1;
+        
+        # storing our new a, b, and x values at the end of a list for graphing later
+        a_list.append(a)
+        b_list.append(b)
+        x_list.append(x)
+    
+    # while loop has broken at this point in the code
+    # we are either within the appropriate tolerance, or reached max iterations
+    if num_iterations == max_iterations:
+        print("Exceeded maximum number of iterations.")
+        return
+        
+    # this is where we hope to be if bisection went well    
+    else:
+        print("Number of iterations: " + str(num_iterations) + " with tolerance: " + str(tol))
+        print("Final solution: " + str(x))
+
+ 
+
+
+bisection(0, -1, 1, tol)
 
 # number 3
 from scipy.stats import gamma
