@@ -100,7 +100,7 @@ a = 2 #given from gamma
 thetas = np.linspace(gamma.ppf(0, a), gamma.ppf(0.99, a), 100)
 pdf_vals = gamma.pdf(thetas, a) #f
 plt.figure()
-plt.plot(thetas, pdf_vals,'r-', lw=5, alpha=0.6, label='gamma pdf')
+plt.plot(thetas, pdf_vals,'r-', lw=2, alpha=0.6, label='gamma pdf', color = 'k')
 plt.title('The Gamma PDF')
 maxy = pdf_vals.max()
 indexy = pdf_vals.argmax()
@@ -120,7 +120,7 @@ while (area <= 0.95) & (num_iterations < max_iterations):
     right_idx = right_array.argmin()
     
     left_intercept = thetas[left_idx]
-    right_intercept = thetas[right_idx]
+    right_intercept = thetas[right_idx + left_array.size]
     area = gamma.cdf(right_intercept,a) - gamma.cdf(left_intercept,a)
 
 plt.axvline(left_intercept)
@@ -129,3 +129,7 @@ plt.annotate('Θ_b: the upper \ninterval bound', (5, 0.3))
 plt.ylabel('The PDF f(Θ)')
 plt.xlabel('Θ values')
 plt.axvline(right_intercept)
+
+x = np.arange(left_intercept, right_intercept, 0.01)
+plt.fill_between(x, gamma.pdf(x, a), color = 'c')
+plt.annotate('95% posterior \ndensity interval', (0.8, 0.17))
